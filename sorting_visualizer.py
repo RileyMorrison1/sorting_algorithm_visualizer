@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import random
 
 
 # Array class stores an array full of numbers, that will be sorted.
@@ -36,30 +37,65 @@ class SortArray:
         self.interface = interface
         self.i = 0
         self.j = 0
-        self.prior_steps = []
+        self.steps = []
+        self.current_step = 0
+        self.finished = False
 
-    # bubble_sort_next method does the next step in the bubble sort algorithm
-    def bubble_sort_next(self):
+    # sort_next method goes to the next step in the steps array.
+    def sort_next(self):
+        # Adds one to the current step if it is not at the last value of the steps array.
+        if self.current_step < len(self.steps) - 1:
+            self.current_step += 1
 
-        if self.i < (self.array.get_length() - 1):
-
-            if self.j < (self.array.get_length() - 1 - self.i):
-
-                if self.array.numbers[self.j] > self.array.numbers[self.j + 1]:
-                    self.array.numbers[self.j], self.array.numbers[self.j + 1] = self.array.numbers[self.j + 1], self.array.numbers[self.j]
-
-                self.j += 1
-
-            else:
-                self.j = 0
-                self.i += 1
-
+        # Sets the finished variable to true if the current step is at the last value of the steps array.
         else:
-            self.i = 0
+            self.finished = True
+
+        # Sets the values to the next step.
+        self.array.numbers = self.steps[self.current_step][0]
+        self.i = self.steps[self.current_step][1]
+        self.j = self.steps[self.current_step][2]
 
     # sort_back method makes the array go back to the prior states.
     def sort_back(self):
-        pass
+        if self.current_step >= 1:
+            self.current_step -= 1
+
+            # Sets the values to the previous step.
+            self.array.numbers = self.steps[self.current_step][0]
+            self.i = self.steps[self.current_step][1]
+            self.j = self.steps[self.current_step][2]
+            self.finished = False
+
+    # finish method skips to the end of the steps array.
+    def finish(self):
+        self.current_step = len(self.steps) - 1
+        self.array.numbers = self.steps[self.current_step][0]
+        self.i = self.steps[self.current_step][1]
+        self.j = self.steps[self.current_step][2]
+        self.finished = True
+
+    # start method skips to the start of the steps array.
+    def start(self):
+        self.current_step = 0
+        self.array.numbers = self.steps[self.current_step][0]
+        self.i = self.steps[self.current_step][1]
+        self.j = self.steps[self.current_step][2]
+        self.finished = False
+
+    # bubble_sort sorts the array with the bubble sort algorith.
+    def bubble_sort(self):
+        # Every time the method is called the steps array is reset.
+        self.steps = []
+        for i in range(self.array.get_length() - 1):
+
+            for j in range(self.array.get_length() - 1 - i):
+
+                if self.array.numbers[j] > self.array.numbers[j + 1]:
+                    self.array.numbers[j], self.array.numbers[j + 1] = self.array.numbers[j + 1], self.array.numbers[j]
+
+                # Saves every step to the steps array.
+                self.steps.append([self.array.numbers.copy(), i, j])
 
     # I am going to add more sorting algorithms below.
 
@@ -77,6 +113,8 @@ class Interface:
         self.sorting = SortArray(self.array, self)
         self.starting_position = 100
         self.gap = 5
+        self.sorting.bubble_sort()
+        pygame.display.set_caption("Sorting Algorithm Visualizer")
 
     # write_text method writes text to the screen at a given location.
     def write_text(self, text, text_colour, x, y):
@@ -87,12 +125,15 @@ class Interface:
     # draw_array method draws the array onto the screen.
     def draw_array(self):
         self.screen.fill("cadetblue")
-        num1, num2 = self.array.numbers[self.sorting.j - 1], self.array.numbers[self.sorting.j]
+
+        # Assigns the bars which will be highlighted.
+        num1, num2 = self.array.numbers[self.sorting.j], self.array.numbers[self.sorting.j + 1]
         colour = "grey25"
 
         # Loops through every number in the array.
         for number in self.array.get_numbers():
 
+            # Alternates between the colours of the numbers
             if colour == "grey25":
                 colour = "black"
 
@@ -111,19 +152,26 @@ class Interface:
             self.write_text(str(number), colour, (self.starting_position + self.gap - 5, 650), (self.starting_position + self.gap - 5, 650 - (number + 1) * 10))
             self.gap += 20
 
+        # Resets to the default starting x position of the bars.
         self.gap = 10
 
     # Runs the programs
     def run(self):
         pygame.init()
-        timer = Timer(1, 5)
+        timer = Timer(.05, 5)
         stop_button = Button(self.screen, "Stop", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 500, 685, 100, 50, 5, 1, timer.stop)
-        start_button = Button(self.screen, "Start", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 600, 685, 100, 50, 5, 1, timer.start)
-        increase_speed_button = Button(self.screen, "Speed+", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 910, 685,110, 50, 5, 1, timer.increase_speed)
-        decrease_speed_button = Button(self.screen, "Speed-", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 800, 685,110, 50, 5, 1, timer.decrease_speed)
-        next_step_button = Button(self.screen, "Next", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 300, 685,110, 50, 5, 0.1, self.sorting.bubble_sort_next)
-        back_step_button = Button(self.screen, "Back", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black",190, 685, 110, 50, 5, .1, self.sorting.sort_back)
-        self.draw_array()
+        go_button = Button(self.screen, "Start", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 600, 685, 100, 50, 5, 1, timer.start)
+
+        fast_speed_button = Button(self.screen, "Fast", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 1080, 685,110, 50, 5, 1, timer.increase_speed)
+        slow_speed_button = Button(self.screen, "Slow", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 860, 685,110, 50, 5, 1, timer.decrease_speed)
+        default_speed_button = Button(self.screen, "Default", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 970, 685,110, 50, 5, 1, timer.default_speed)
+
+        finish_button = Button(self.screen, "Finish", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 340, 685,110, 50, 5, 0.1, self.sorting.finish)
+        next_step_button = Button(self.screen, "Next", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 230, 685,110, 50, 5, 0.1, self.sorting.sort_next)
+        back_step_button = Button(self.screen, "Back", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black",120, 685, 110, 50, 5, .1, self.sorting.sort_back)
+        start_button = Button(self.screen, "Start", "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black",10, 685, 110, 50, 5, .1, self.sorting.start)
+
+        go_button.on_or_off = True
 
         while self.running:
 
@@ -132,17 +180,29 @@ class Interface:
                 if event.type == pygame.QUIT:
                     pygame.quit()
 
+            # Stops going to the next step if at the last step.
+            if self.sorting.finished:
+                timer.on = False
+
+            # Goes to the next step if the desired amount of time has passed.
             if timer.ready():
-                self.sorting.bubble_sort_next()
+                self.sorting.sort_next()
 
             self.draw_array()
+
+            # Creates the menu background.
             pygame.draw.rect(self.screen, "azure3", (0, 675, 1200, 100))
-            start_button.refresh()
+
+            # Refreshes the buttons. (Might need to make a method to refresh all the buttons at the same time.)
+            go_button.refresh()
             stop_button.refresh()
-            increase_speed_button.refresh()
-            decrease_speed_button.refresh()
+            fast_speed_button.refresh()
+            slow_speed_button.refresh()
             back_step_button.refresh()
             next_step_button.refresh()
+            start_button.refresh()
+            finish_button.refresh()
+            default_speed_button.refresh()
             pygame.display.flip()
 
         pygame.quit()
@@ -168,6 +228,7 @@ class Button:
         self.time_between = time_between
         self.timer = Timer(self.time_between, 0)
         self.highlight_colour = highlight_colour
+        self.on_or_off = False
 
     # refresh method makes sure the button is on the screen and adds functionality to the button if highlighted
     # or clicked on. Needs to be placed in the main loop.
@@ -180,7 +241,18 @@ class Button:
             if self.click():
 
                 if self.timer.ready():
-                    self.function()
+
+                    # Alternates between on and off.
+                    match self.on_or_off:
+
+                        case True:
+                            self.on_or_off = False
+
+                        case False:
+                            self.on_or_off = True
+
+                    if self.function != 0:
+                        self.function()
 
         pygame.draw.rect(self.screen, self.border_colour, (self.x, self.y, self.width, self.height))
         pygame.draw.rect(self.screen, colour, (self.x + (self.border_width / 2), self.y + (self.border_width / 2), self.width - self.border_width, self.height - self.border_width))
@@ -217,7 +289,8 @@ class Timer:
 
     # Initializes the timer with max seconds between operations and max delay.
     def __init__(self, seconds, max):
-        self.seconds = seconds
+        self.default = seconds
+        self.seconds = self.default
         self.start_time = time.localtime().tm_sec
         self.max = max
         # on instance variable determines if the array is being sorted.
@@ -244,20 +317,15 @@ class Timer:
 
     # decrease_speed method reduces the speed of sorting by adding some time to the seconds.
     def decrease_speed(self):
+        self.seconds = 2
 
-        if self.seconds <= self.max:
-            self.seconds += .1
-
-    # increase_speed method increases the speed of sorting by reducing some time to the seconds.
-    # Needs to be allowed to decrease even further to speed up the sorting if needed.
+    # increase_speed method sets the seconds to 0 to make the sorting go fast.
     def increase_speed(self):
-        if self.seconds > .01:
+        self.seconds = 0
 
-            if self.seconds > .2:
-                self.seconds -= .1
-
-            else:
-                self.seconds -= .01
+    # default_speed method sets the seconds to the default seconds.
+    def default_speed(self):
+        self.seconds = self.default
 
     # stop method stops the timer.
     def stop(self):
