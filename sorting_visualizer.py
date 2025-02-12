@@ -1,7 +1,6 @@
 import pygame
 import random
 import time
-import random
 
 
 # Array class stores an array full of numbers, that will be sorted.
@@ -107,7 +106,7 @@ class SortArray:
         self.finished = False
         self.array.randomize()
 
-    # bubble_sort sorts the array using the bubble sort algorithm.
+    # bubble_sort method sorts the array using the bubble sort algorithm.
     def bubble_sort(self):
         # Every time the method is called the steps array is reset.
         self.reset()
@@ -124,7 +123,7 @@ class SortArray:
 
         self.sort_next()
 
-    # insertion_sort sorts the array using the insertion sort algorithm.
+    # insertion_sort method sorts the array using the insertion sort algorithm.
     def insertion_sort(self):
         self.reset()
         self.steps = []
@@ -143,7 +142,32 @@ class SortArray:
 
         self.sort_next()
 
-    # selection_sort sorts the array using the selection sort algorithm.
+    # shell_sort method sorts the array using the shell sort algorithm.
+    def shell_sort(self):
+        self.reset()
+        interval_between = len(self.array.numbers) // 2
+
+        while interval_between > 0:
+            j = interval_between
+
+            while j < len(self.array.numbers):
+                i = j - interval_between
+
+                while i >= 0:
+
+                    if self.array.numbers[i + interval_between] < self.array.numbers[i]:
+                        self.array.numbers[i + interval_between], self.array.numbers[i] = self.array.numbers[i], self.array.numbers[i + interval_between]
+
+                    self.steps.append([self.array.numbers.copy(), i, j])
+                    i = i - interval_between
+
+                j += 1
+
+            interval_between = interval_between // 2
+
+        self.sort_next()
+
+    # selection_sort method sorts the array using the selection sort algorithm.
     def selection_sort(self):
         self.reset()
         for i in range(len(self.array.numbers) - 1):
@@ -237,6 +261,8 @@ class Interface:
         bubble_sort = Button(self.screen, "Bubble Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 20, 10, 110, 25, 5, .1, self.sorting.bubble_sort)
         selection_sort = Button(self.screen, "Selection Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 140, 10, 110, 25, 5, .1, self.sorting.selection_sort)
         insertion_sort = Button(self.screen, "Insertion Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 260, 10, 110, 25, 5, .1, self.sorting.insertion_sort)
+        shell_sort = Button(self.screen, "Shell Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 380, 10, 110, 25, 5, .1, self.sorting.shell_sort)
+
         go_button.on_or_off = True
 
         while self.running:
@@ -272,6 +298,7 @@ class Interface:
             bubble_sort.refresh()
             selection_sort.refresh()
             insertion_sort.refresh()
+            shell_sort.refresh()
 
             pygame.display.flip()
 
