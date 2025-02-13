@@ -105,6 +105,7 @@ class SortArray:
         self.current_step = 0
         self.finished = False
         self.array.randomize()
+        self.interface.timer.on = False
 
     # bubble_sort method sorts the array using the bubble sort algorithm.
     def bubble_sort(self):
@@ -145,7 +146,7 @@ class SortArray:
     # shell_sort method sorts the array using the shell sort algorithm.
     def shell_sort(self):
         self.reset()
-        interval_between = len(self.array.numbers) // 2
+        interval_between = len(self.array.numbers)//2
 
         while interval_between > 0:
             j = interval_between
@@ -200,6 +201,7 @@ class Interface:
         self.sorting = SortArray(self.array, self)
         self.starting_position = 100
         self.gap = 5
+        self.timer = Timer(.05, 2)
 
         pygame.display.set_caption("Sorting Algorithm Visualizer")
 
@@ -215,28 +217,34 @@ class Interface:
 
         # Assigns the bars which will be highlighted.
         num1, num2 = self.array.numbers[self.sorting.j], self.array.numbers[self.sorting.i]
-        colour = "grey25"
+        number_colour = "grey25"
+        colour = "springgreen4"
 
         # Loops through every number in the array.
         for number in self.array.get_numbers():
 
             # Alternates between the colours of the numbers
-            if colour == "grey25":
-                colour = "black"
+            if number_colour == "grey25":
+                number_colour = "black"
 
-            elif colour == "black":
-                colour = "grey25"
+            elif number_colour == "black":
+                number_colour = "grey25"
+
+            if colour == "springgreen4":
+                colour = "springgreen3"
+            elif colour == "springgreen3":
+                colour = "springgreen4"
 
             # If number is the current number selected in the sorting it is represented as orange.
             if (number == num1) | (number == num2):
-                pygame.draw.line(self.screen, "orange", (self.starting_position + self.gap, 650), (self.starting_position + self.gap, 650 - (number + 1) * 10), 10)
+                pygame.draw.line(self.screen, "orange", (self.starting_position + self.gap, 650), (self.starting_position + self.gap, 650 - (number + 1) * 12), 10)
 
             # If number is not the current number selected in the sorting it is represented as green.
             else:
-                pygame.draw.line(self.screen, "green", (self.starting_position + self.gap, 650), (self.starting_position + self.gap, 650 - (number + 1) * 10), 10)
+                pygame.draw.line(self.screen, colour, (self.starting_position + self.gap, 650), (self.starting_position + self.gap, 650 - (number + 1) * 12), 10)
 
             # Writes the value of the number underneath the bar.
-            self.write_text(str(number), colour, (self.starting_position + self.gap - 5, 650), (self.starting_position + self.gap - 5, 650 - (number + 1) * 10))
+            self.write_text(str(number), number_colour, (self.starting_position + self.gap - 5, 650), (self.starting_position + self.gap - 5, 650 - (number + 1) * 10))
             self.gap += 20
 
         # Resets to the default starting x position of the bars.
@@ -245,23 +253,23 @@ class Interface:
     # Runs the programs
     def run(self):
         pygame.init()
-        timer = Timer(.05, 5)
-        stop_button = Button(self.screen, "Stop", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 500, 685, 100, 50, 5, 1, timer.stop)
-        go_button = Button(self.screen, "Start", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 600, 685, 100, 50, 5, 1, timer.start)
 
-        fast_speed_button = Button(self.screen, "Fast", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 1080, 685,110, 50, 5, 1, timer.increase_speed)
-        slow_speed_button = Button(self.screen, "Slow", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 860, 685,110, 50, 5, 1, timer.decrease_speed)
-        default_speed_button = Button(self.screen, "Default", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 970, 685,110, 50, 5, 1, timer.default_speed)
+        stop_button = Button(self.screen, "Stop", 30, "firebrick4", "firebrick", "firebrick3", "firebrick1", "black", 500, 685, 100, 50, 5, 1, self.timer.stop)
+        go_button = Button(self.screen, "Go", 30, "green4", "green", "green3", "green2", "black", 600, 685, 100, 50, 5, 1, self.timer.start)
 
-        finish_button = Button(self.screen, "Finish", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 340, 685,110, 50, 5, 0.1, self.sorting.finish)
-        next_step_button = Button(self.screen, "Next", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 230, 685,110, 50, 5, 0.1, self.sorting.sort_next)
-        back_step_button = Button(self.screen, "Back", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black",120, 685, 110, 50, 5, .1, self.sorting.sort_back)
-        start_button = Button(self.screen, "Start", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black",10, 685, 110, 50, 5, .1, self.sorting.start)
+        fast_speed_button = Button(self.screen, "Fast", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 1080, 685,110, 50, 5, 1, self.timer.increase_speed)
+        slow_speed_button = Button(self.screen, "Slow", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 860, 685,110, 50, 5, 1, self.timer.decrease_speed)
+        default_speed_button = Button(self.screen, "Default", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 970, 685,110, 50, 5, 1, self.timer.default_speed)
 
-        bubble_sort = Button(self.screen, "Bubble Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 20, 10, 110, 25, 5, .1, self.sorting.bubble_sort)
-        selection_sort = Button(self.screen, "Selection Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 140, 10, 110, 25, 5, .1, self.sorting.selection_sort)
-        insertion_sort = Button(self.screen, "Insertion Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 260, 10, 110, 25, 5, .1, self.sorting.insertion_sort)
-        shell_sort = Button(self.screen, "Shell Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "black", 380, 10, 110, 25, 5, .1, self.sorting.shell_sort)
+        finish_button = Button(self.screen, "Finish", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 340, 685,110, 50, 5, 0.1, self.sorting.finish)
+        next_step_button = Button(self.screen, "Next", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 230, 685,110, 50, 5, 0.1, self.sorting.sort_next)
+        back_step_button = Button(self.screen, "Back", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black",120, 685, 110, 50, 5, .1, self.sorting.sort_back)
+        start_button = Button(self.screen, "Start", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black",10, 685, 110, 50, 5, .1, self.sorting.start)
+
+        bubble_sort = Button(self.screen, "Bubble Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 20, 10, 110, 25, 5, .1, self.sorting.bubble_sort)
+        selection_sort = Button(self.screen, "Selection Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 140, 10, 110, 25, 5, .1, self.sorting.selection_sort)
+        insertion_sort = Button(self.screen, "Insertion Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3","lightslategrey", "black", 260, 10, 110, 25, 5, .1, self.sorting.insertion_sort)
+        shell_sort = Button(self.screen, "Shell Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 380, 10, 110, 25, 5, .1, self.sorting.shell_sort)
 
         go_button.on_or_off = True
 
@@ -274,10 +282,10 @@ class Interface:
 
             # Stops going to the next step if at the last step.
             if self.sorting.finished:
-                timer.on = False
+                self.timer.on = False
 
             # Goes to the next step if the desired amount of time has passed.
-            if timer.ready():
+            if self.timer.ready():
                 self.sorting.sort_next()
 
             self.draw_array()
@@ -286,15 +294,51 @@ class Interface:
             pygame.draw.rect(self.screen, "azure3", (0, 675, 1200, 100))
 
             # Refreshes the buttons. (Might need to make a method to refresh all the buttons at the same time.)
-            go_button.refresh()
-            stop_button.refresh()
-            fast_speed_button.refresh()
-            slow_speed_button.refresh()
-            back_step_button.refresh()
-            next_step_button.refresh()
-            start_button.refresh()
-            finish_button.refresh()
-            default_speed_button.refresh()
+            if len(self.sorting.steps) > 0:
+                
+                if not self.timer.on:
+                    go_button.refresh()
+
+                else:
+                    stop_button.refresh()
+
+                if self.timer.seconds == self.timer.default:
+                    default_speed_button.colour = default_speed_button.click_colour
+
+                else:
+                    default_speed_button.colour = "lightsteelblue"
+
+                if self.timer.seconds == 0:
+                    fast_speed_button.colour = fast_speed_button.click_colour
+
+                else:
+                    fast_speed_button.colour = "lightsteelblue"
+
+                if self.timer.seconds == self.timer.max:
+                    slow_speed_button.colour = slow_speed_button.click_colour
+
+                else:
+                    slow_speed_button.colour = "lightsteelblue"
+
+                if len(self.sorting.steps) - 1 == self.sorting.current_step:
+                    finish_button.colour = finish_button.click_colour
+
+                else:
+                    finish_button.colour = "lightsteelblue"
+
+                if self.sorting.current_step == 0:
+                    start_button.colour = start_button.click_colour
+
+                else:
+                    start_button.colour = "lightsteelblue"
+
+                fast_speed_button.refresh()
+                slow_speed_button.refresh()
+                back_step_button.refresh()
+                next_step_button.refresh()
+                start_button.refresh()
+                finish_button.refresh()
+                default_speed_button.refresh()
             bubble_sort.refresh()
             selection_sort.refresh()
             insertion_sort.refresh()
@@ -310,7 +354,7 @@ class Interface:
 class Button:
 
     # Initializes a button with all the values it needs.
-    def __init__(self, screen, text, text_size, border_colour, colour, highlight_colour, text_colour, x, y, width, height, border_width, time_between, function):
+    def __init__(self, screen, text, text_size, border_colour, colour, highlight_colour, click_colour, text_colour, x, y, width, height, border_width, time_between, function):
         self.screen = screen
         self.text = text
         self.border_colour = border_colour
@@ -327,6 +371,7 @@ class Button:
         self.highlight_colour = highlight_colour
         self.on_or_off = False
         self.text_size = text_size
+        self.click_colour = click_colour
 
     # refresh method makes sure the button is on the screen and adds functionality to the button if highlighted
     # or clicked on. Needs to be placed in the main loop.
@@ -337,7 +382,7 @@ class Button:
             colour = self.highlight_colour
 
             if self.click():
-
+                colour = self.click_colour
                 if self.timer.ready():
 
                     # Alternates between on and off.
@@ -415,7 +460,7 @@ class Timer:
 
     # decrease_speed method reduces the speed of sorting by adding some time to the seconds.
     def decrease_speed(self):
-        self.seconds = 2
+        self.seconds = self.max
 
     # increase_speed method sets the seconds to 0 to make the sorting go fast.
     def increase_speed(self):
