@@ -42,6 +42,7 @@ class SortArray:
 
     # sort_next method goes to the next step in the steps array.
     def sort_next(self):
+        
         # Adds one to the current step if it is not at the last value of the steps array.
         if self.current_step < len(self.steps) - 1:
             self.current_step += 1
@@ -58,6 +59,7 @@ class SortArray:
 
     # sort_back method makes the array go back to the prior states.
     def sort_back(self):
+        
         if self.current_step >= 1:
             self.current_step -= 1
 
@@ -69,20 +71,24 @@ class SortArray:
 
     # finish method skips to the end of the steps array.
     def finish(self):
+        
         if len(self.steps) != 0:
             self.current_step = len(self.steps) - 1
             self.array.numbers = self.steps[self.current_step][0]
             self.i = self.steps[self.current_step][1]
             self.j = self.steps[self.current_step][2]
+            
         self.finished = True
 
     # start method skips to the start of the steps array.
     def start(self):
+        
         if len(self.steps) != 0:
             self.current_step = 0
             self.array.numbers = self.steps[self.current_step][0]
             self.i = self.steps[self.current_step][1]
             self.j = self.steps[self.current_step][2]
+            
         self.finished = False
 
     # sort_first_element method swaps the first element in the array with the smallest element in the array.
@@ -91,6 +97,7 @@ class SortArray:
         smallest = self.array.numbers[0]
         index = 0
         for number in range(len(self.array.numbers)):
+            
             if self.array.numbers[number] < smallest:
                 smallest = self.array.numbers[number]
                 index = number
@@ -104,8 +111,12 @@ class SortArray:
         self.steps = []
         self.current_step = 0
         self.finished = False
-        self.array.randomize()
         self.interface.timer.on = False
+
+    # randomize function randomizes the array and also resets the sorting steps.
+    def randomize(self):
+        self.reset()
+        self.array.randomize()
 
     # bubble_sort method sorts the array using the bubble sort algorithm.
     def bubble_sort(self):
@@ -146,7 +157,7 @@ class SortArray:
     # shell_sort method sorts the array using the shell sort algorithm.
     def shell_sort(self):
         self.reset()
-        interval_between = len(self.array.numbers)//2
+        interval_between = len(self.array.numbers) // 2
 
         while interval_between > 0:
             j = interval_between
@@ -157,7 +168,8 @@ class SortArray:
                 while i >= 0:
 
                     if self.array.numbers[i + interval_between] < self.array.numbers[i]:
-                        self.array.numbers[i + interval_between], self.array.numbers[i] = self.array.numbers[i], self.array.numbers[i + interval_between]
+                        self.array.numbers[i + interval_between], self.array.numbers[i] = self.array.numbers[i], \
+                        self.array.numbers[i + interval_between]
 
                     self.steps.append([self.array.numbers.copy(), i, j])
                     i = i - interval_between
@@ -232,19 +244,23 @@ class Interface:
 
             if colour == "springgreen4":
                 colour = "springgreen3"
+                
             elif colour == "springgreen3":
                 colour = "springgreen4"
 
             # If number is the current number selected in the sorting it is represented as orange.
             if (number == num1) | (number == num2):
-                pygame.draw.line(self.screen, "orange", (self.starting_position + self.gap, 650), (self.starting_position + self.gap, 650 - (number + 1) * 12), 10)
+                pygame.draw.line(self.screen, "orange", (self.starting_position + self.gap, 650),
+                                 (self.starting_position + self.gap, 650 - (number + 1) * 12), 10)
 
             # If number is not the current number selected in the sorting it is represented as green.
             else:
-                pygame.draw.line(self.screen, colour, (self.starting_position + self.gap, 650), (self.starting_position + self.gap, 650 - (number + 1) * 12), 10)
+                pygame.draw.line(self.screen, colour, (self.starting_position + self.gap, 650),
+                                 (self.starting_position + self.gap, 650 - (number + 1) * 12), 10)
 
             # Writes the value of the number underneath the bar.
-            self.write_text(str(number), number_colour, (self.starting_position + self.gap - 5, 650), (self.starting_position + self.gap - 5, 650 - (number + 1) * 10))
+            self.write_text(str(number), number_colour, (self.starting_position + self.gap - 5, 650),
+                            (self.starting_position + self.gap - 5, 650 - (number + 1) * 10))
             self.gap += 20
 
         # Resets to the default starting x position of the bars.
@@ -254,22 +270,45 @@ class Interface:
     def run(self):
         pygame.init()
 
-        stop_button = Button(self.screen, "Stop", 30, "firebrick4", "firebrick", "firebrick3", "firebrick1", "black", 500, 685, 100, 50, 5, 1, self.timer.stop)
-        go_button = Button(self.screen, "Go", 30, "green4", "green", "green3", "green2", "black", 600, 685, 100, 50, 5, 1, self.timer.start)
+        # Bottom Buttons
 
-        fast_speed_button = Button(self.screen, "Fast", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 1080, 685,110, 50, 5, 1, self.timer.increase_speed)
-        slow_speed_button = Button(self.screen, "Slow", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 860, 685,110, 50, 5, 1, self.timer.decrease_speed)
-        default_speed_button = Button(self.screen, "Default", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 970, 685,110, 50, 5, 1, self.timer.default_speed)
+        stop_button = Button(self.screen, "Stop", 30, "firebrick4", "firebrick", "firebrick3", "firebrick1", "black",
+                             500, 685, 100, 50, 5, 1, self.timer.stop)
+        go_button = Button(self.screen, "Go", 30, "green4", "green", "green3", "green2", "black", 600, 685, 100, 50, 5,
+                           1, self.timer.start)
 
-        finish_button = Button(self.screen, "Finish", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 340, 685,110, 50, 5, 0.1, self.sorting.finish)
-        next_step_button = Button(self.screen, "Next", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 230, 685,110, 50, 5, 0.1, self.sorting.sort_next)
-        back_step_button = Button(self.screen, "Back", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black",120, 685, 110, 50, 5, .1, self.sorting.sort_back)
-        start_button = Button(self.screen, "Start", 30,  "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black",10, 685, 110, 50, 5, .1, self.sorting.start)
+        fast_speed_button = Button(self.screen, "Fast", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                                   "lightslategrey", "black", 1080, 685, 110, 50, 5, 1, self.timer.increase_speed)
+        slow_speed_button = Button(self.screen, "Slow", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                                   "lightslategrey", "black", 860, 685, 110, 50, 5, 1, self.timer.decrease_speed)
+        default_speed_button = Button(self.screen, "Default", 30, "lightsteelblue4", "lightsteelblue",
+                                      "lightsteelblue3", "lightslategrey", "black", 970, 685, 110, 50, 5, 1,
+                                      self.timer.default_speed)
 
-        bubble_sort = Button(self.screen, "Bubble Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 20, 10, 110, 25, 5, .1, self.sorting.bubble_sort)
-        selection_sort = Button(self.screen, "Selection Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 140, 10, 110, 25, 5, .1, self.sorting.selection_sort)
-        insertion_sort = Button(self.screen, "Insertion Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3","lightslategrey", "black", 260, 10, 110, 25, 5, .1, self.sorting.insertion_sort)
-        shell_sort = Button(self.screen, "Shell Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3", "lightslategrey", "black", 380, 10, 110, 25, 5, .1, self.sorting.shell_sort)
+        finish_button = Button(self.screen, "Finish", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                               "lightslategrey", "black", 340, 685, 110, 50, 5, 0.1, self.sorting.finish)
+        next_step_button = Button(self.screen, "Next", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                                  "lightslategrey", "black", 230, 685, 110, 50, 5, 0.1, self.sorting.sort_next)
+        back_step_button = Button(self.screen, "Back", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                                  "lightslategrey", "black", 120, 685, 110, 50, 5, .1, self.sorting.sort_back)
+        start_button = Button(self.screen, "Start", 30, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                              "lightslategrey", "black", 10, 685, 110, 50, 5, .1, self.sorting.start)
+
+        # Top Buttons
+
+        bubble_sort_button = Button(self.screen, "Bubble Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                             "lightslategrey", "black", 20, 10, 110, 25, 5, .1, self.sorting.bubble_sort)
+        selection_sort_button = Button(self.screen, "Selection Sort", 15, "lightsteelblue4", "lightsteelblue",
+                                "lightsteelblue3", "lightslategrey", "black", 140, 10, 110, 25, 5, .1,
+                                self.sorting.selection_sort)
+        insertion_sort_button = Button(self.screen, "Insertion Sort", 15, "lightsteelblue4", "lightsteelblue",
+                                "lightsteelblue3", "lightslategrey", "black", 260, 10, 110, 25, 5, .1,
+                                self.sorting.insertion_sort)
+        shell_sort_button = Button(self.screen, "Shell Sort", 15, "lightsteelblue4", "lightsteelblue", "lightsteelblue3",
+                            "lightslategrey", "black", 380, 10, 110, 25, 5, .1, self.sorting.shell_sort)
+
+        randomize_button = Button(self.screen, "Randomize", 15, "firebrick4", "firebrick", "firebrick3",
+                            "firebrick1", "black", 1080, 10, 110, 25, 5, .1, self.sorting.randomize)
 
         go_button.on_or_off = True
 
@@ -293,9 +332,9 @@ class Interface:
             # Creates the menu background.
             pygame.draw.rect(self.screen, "azure3", (0, 675, 1200, 100))
 
-            # Refreshes the buttons. (Might need to make a method to refresh all the buttons at the same time.)
+            # Refreshes the buttons.
             if len(self.sorting.steps) > 0:
-                
+
                 if not self.timer.on:
                     go_button.refresh()
 
@@ -339,10 +378,12 @@ class Interface:
                 start_button.refresh()
                 finish_button.refresh()
                 default_speed_button.refresh()
-            bubble_sort.refresh()
-            selection_sort.refresh()
-            insertion_sort.refresh()
-            shell_sort.refresh()
+
+            bubble_sort_button.refresh()
+            selection_sort_button.refresh()
+            insertion_sort_button.refresh()
+            shell_sort_button.refresh()
+            randomize_button.refresh()
 
             pygame.display.flip()
 
@@ -354,7 +395,8 @@ class Interface:
 class Button:
 
     # Initializes a button with all the values it needs.
-    def __init__(self, screen, text, text_size, border_colour, colour, highlight_colour, click_colour, text_colour, x, y, width, height, border_width, time_between, function):
+    def __init__(self, screen, text, text_size, border_colour, colour, highlight_colour, click_colour, text_colour, x,
+                 y, width, height, border_width, time_between, function):
         self.screen = screen
         self.text = text
         self.border_colour = border_colour
@@ -398,8 +440,10 @@ class Button:
                         self.function()
 
         pygame.draw.rect(self.screen, self.border_colour, (self.x, self.y, self.width, self.height))
-        pygame.draw.rect(self.screen, colour, (self.x + (self.border_width / 2), self.y + (self.border_width / 2), self.width - self.border_width, self.height - self.border_width))
-        self.write_text(self.text, self.text_colour, self.x + 20, self.y + (self.height/ 7))
+        pygame.draw.rect(self.screen, colour, (
+        self.x + (self.border_width / 2), self.y + (self.border_width / 2), self.width - self.border_width,
+        self.height - self.border_width))
+        self.write_text(self.text, self.text_colour, self.x + 20, self.y + (self.height / 7))
 
     # highlight method returns true if the cursor is over the button.
     def highlight(self):
